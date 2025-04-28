@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+python-dotenv
+playwright
+kiwi
+kiwipiepy
+pandas
+sentence_transformers
