@@ -63,7 +63,7 @@ def crawlAndAnalyze(targetId="anthraciteCafe", targetType="cafe"):
         db.close()
 
 
-# 본 프로젝트 스케줄러 : 매달 1일 실행
+# 본 프로젝트 스케줄러 : 매달 1일 실행d
 def startScheduler():
     scheduler = BackgroundScheduler()
 
