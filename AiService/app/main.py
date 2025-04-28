@@ -1,8 +1,11 @@
 from fastapi import FastAPI
-from .router import router
-from .scheduler import start_scheduler
+from app.router import router
+from app.scheduler import startScheduler
 
 app = FastAPI()
-start_scheduler()
+
+@app.on_event("startup")
+async def startupEvent():
+    startScheduler()
 
 app.include_router(router)

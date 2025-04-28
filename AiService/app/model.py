@@ -1,4 +1,4 @@
-# app/model.py
+# SQLAlchemy 모델 정의
 from sqlalchemy import Column, Integer, String, Text
 from .database import Base  # database.py에서 Base 가져오기
 

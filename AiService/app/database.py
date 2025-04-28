@@ -1,3 +1,5 @@
+# DB 연결 설정
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv

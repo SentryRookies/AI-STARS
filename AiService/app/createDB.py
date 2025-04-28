@@ -1,4 +1,4 @@
-# app/create_db.py
+# 테이블 생성
 from .database import engine
 from .model import Base
 

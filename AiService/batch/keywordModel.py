@@ -1,51 +1,80 @@
-from app.database import SessionLocal
-from app.model import ReviewSummarize
+# batch/keyword/keyword_extractor.py
+import pandas as pd
+from sentence_transformers import SentenceTransformer, util
+from typing import List
 
-from batch.crawler.naver_review import crawl_reviews
-from batch.analyzer.sentiment_batch import analyze_reviews
-from batch.keyword.keyword_extractor import extract_top_keywords
+# 1. 임베딩 모델 로드
+model = SentenceTransformer("jhgan/ko-sbert-nli")
 
-import asyncio
+# 2. 키워드 매핑 (positive/negative)
+positiveKeywordMapping = { ... }  
+negativeKeywordMapping = { ... }
 
-def crawl_and_analyze():
-    print("📦 [스케줄러] 리뷰 수집 및 분석 시작")
+# 3. 키워드 매칭 함수
+def getTopKeywordAndScore(text: str, keywordDict: dict) -> pd.Series:
+    textEmbedding = model.encode(text, convert_to_tensor=True)
+    scores = {}
+    bestSentence = ""
+    bestScore = -1
 
-    db = SessionLocal()
+    for keyword, reps in keywordDict.items():
+        repEmbeddings = model.encode(reps, convert_to_tensor=True)
+        score = util.pytorch_cos_sim(textEmbedding, repEmbeddings).max().item()
+        scores[keyword] = score
 
-    try:
-        # 1. 크롤링 (비동기 → 동기로 실행)
-        reviews = asyncio.run(crawl_reviews())
+        if score > bestScore:
+            bestScore = score
+            bestSentence = reps[reps.index(
+                max(reps, key=lambda x: util.pytorch_cos_sim(
+                    textEmbedding, model.encode(x, convert_to_tensor=True)).item()
+                )
+            )]
 
-        # 2. 감정 분석
-        analyzed_data = analyze_reviews(reviews)  # List[dict] ← text, label, score
+    topKeyword = max(scores, key=scores.get)
+    return pd.Series([topKeyword, bestSentence, bestScore])
 
-        # 3. 키워드 추출 (단순 출력, DB에는 저장하지 않음)
-        extract_top_keywords(analyzed_data)
+# 4. 리뷰 리스트로부터 키워드 추출
+def extractTopKeywords(analyzedData: list[dict], save: bool = False, prefix: str = "result") -> tuple[list, list]:
+    df = pd.DataFrame(analyzedData)
 
-        # 4. DB 저장
-        for item in analyzed_data:
-            label = item["label"]
-            content = item["text"]
+    # 감정 필터링
+    positive_df = df[df["label"] == "positive"].copy()
+    negative_df = df[df["label"] == "negative"].copy()
 
-            sentiment = (
-                "positive" if label == "positive"
-                else "negative" if label == "negative"
-                else "neutral"
-            )
+    # 키워드 추출 결과 저장용
+    positive_keywords = []
+    negative_keywords = []
 
-            summary = ReviewSummarize(
-                target_id="anthracite_cafe",         # 고정 or 인자로 받을 수 있음
-                target_type="cafe",
-                sentiment=sentiment,
-                content=content
-            )
-            db.add(summary)
+    # 긍정 리뷰 키워드 추출
+    positive_results = positive_df["text"].apply(lambda x: getTopKeywordAndScore(x, positiveKeywordMapping))
+    positive_df["keyword"] = positive_results.apply(lambda x: x[0] if isinstance(x, (list, tuple)) else None)
+    positive_df["similar_sentence"] = positive_results.apply(lambda x: x[1] if isinstance(x, (list, tuple)) else None)
+    positive_df["score"] = positive_results.apply(lambda x: x[2] if isinstance(x, (list, tuple)) else None)
 
-        db.commit()
-        print("✅ 분석 및 저장 완료")
+    # 부정 리뷰 키워드 추출
+    negative_results = negative_df["text"].apply(lambda x: getTopKeywordAndScore(x, negativeKeywordMapping))
+    negative_df["keyword"] = negative_results.apply(lambda x: x[0] if isinstance(x, (list, tuple)) else None)
+    negative_df["similar_sentence"] = negative_results.apply(lambda x: x[1] if isinstance(x, (list, tuple)) else None)
+    negative_df["score"] = negative_results.apply(lambda x: x[2] if isinstance(x, (list, tuple)) else None)
 
-    except Exception as e:
-        db.rollback()
-        print("❌ 오류 발생:", e)
-    finally:
-        db.close()
+    # 상위 키워드 추출
+    top_pos = positive_df["keyword"].value_counts().head(5)
+    top_neg = negative_df["keyword"].value_counts().head(5)
+
+    pos_list = top_pos.index.tolist()
+    neg_list = [k for k in top_neg.index if k not in pos_list]
+
+    if len(neg_list) < 5:
+        remaining = [k for k in top_neg.index if k not in neg_list and k not in pos_list]
+        for k in remaining:
+            if len(neg_list) < 5:
+                neg_list.append(k)
+
+    if save:
+        positive_df.to_excel(f"{prefix}_positive.xlsx", index=False)
+        negative_df.to_excel(f"{prefix}_negative.xlsx", index=False)
+
+    print("📈 긍정 키워드:", pos_list)
+    print("📉 부정 키워드:", neg_list)
+
+    return pos_list, neg_list

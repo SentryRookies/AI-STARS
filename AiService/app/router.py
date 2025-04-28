@@ -1,25 +1,24 @@
-# app/router.py
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from . import database, crud, model, schema
+from app import database, crud, model, schema
 
 router = APIRouter()
 
-def get_db():
+def getDb():
     db = database.SessionLocal()
     try:
         yield db
     finally:
         db.close()
 
-@router.get("/summary/{target_id}")
-def read_summary(target_id: str, db: Session = Depends(get_db)):
-    return crud.get_summary_by_target_id(db, target_id)
+@router.get("/summary/{targetId}", response_model=list[schema.ReviewSummarizeRead])
+def readSummary(targetId: str, db: Session = Depends(getDb)):
+    return crud.getSummaryByTargetId(db, targetId)
 
-@router.post("/summary")
-def create_summary(item: schema.ReviewSummarizeCreate, db: Session = Depends(get_db)):
+@router.post("/summary", response_model=schema.ReviewSummarizeRead)
+def createSummary(item: schema.ReviewSummarizeCreate, db: Session = Depends(getDb)):
     print("🟡 요청 도착:", item.dict())
-    db_item = model.ReviewSummarize(**item.dict())
-    result = crud.create_summary(db, db_item)
+    dbItem = model.ReviewSummarize(**item.dict())
+    result = crud.createSummary(db, dbItem)
     print("🟢 저장 완료:", result)
     return result

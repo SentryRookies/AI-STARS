@@ -1,4 +1,4 @@
-# CRUD
+# DB CRUD
 from sqlalchemy.orm import Session
 from . import model
 
