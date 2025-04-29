@@ -1,4 +1,5 @@
-# 테이블 생성
+# app/create_tables.py
+
 from .database import engine
 from .model import Base
 

@@ -1,4 +1,5 @@
-# Pydantic 요청/응답 모델
+# app/schema.py
+
 from pydantic import BaseModel
 
 # POST용 (요청용)
@@ -13,4 +14,4 @@ class ReviewSummarizeRead(ReviewSummarizeCreate):
     id: int
 
     class Config:
-        from_attributes = True  # ✅ pydantic v2 버전용 옵션
+        from_attributes = True  # ✅ pydantic v2용 옵션 (ORM 연동)

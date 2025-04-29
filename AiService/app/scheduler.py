@@ -1,17 +1,16 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 import atexit
-
 import os
 import pandas as pd
 
 from app.database import SessionLocal
-from app.model import ReviewSummarize
+from app.model import Review_summarize
 
-from batch.emotionModel import analyzeReviews
-from batch.keywordModel import extractTopKeywords
+from batch.emotion_model import analyze_reviews
+from batch.keyword_model import extract_top_keywords
 
-def crawlAndAnalyze(targetId="anthraciteCafe", targetType="cafe"):
+def crawl_and_analyze(target_id="anthracite_cafe", target_type="cafe"):
     print("📦 [스케줄러] CSV 읽기 + 분석 시작")
 
     db = SessionLocal()
@@ -27,14 +26,14 @@ def crawlAndAnalyze(targetId="anthraciteCafe", targetType="cafe"):
                 df = df.dropna(subset=["content"])
                 reviews = [{"content": text} for text in df["content"]]
                 
-                validated_data = analyzeReviews(reviews)
+                validated_data = analyze_reviews(reviews)
                 validated_data = [r for r in validated_data if r and all(k in r for k in ("text", "label", "score"))]
 
                 print(f"✅ 검증된 데이터 수: {len(validated_data)}")
 
                 analyzed_df = pd.DataFrame(validated_data)
 
-                extractTopKeywords(validated_data)
+                extract_top_keywords(validated_data)
 
                 for idx, row in analyzed_df.iterrows():
                     label = row["label"]
@@ -45,9 +44,9 @@ def crawlAndAnalyze(targetId="anthraciteCafe", targetType="cafe"):
                         else "neutral"
                     )
 
-                    summary = ReviewSummarize(
-                        target_id=targetId,
-                        target_type=targetType,
+                    summary = Review_summarize(
+                        target_id=target_id,
+                        target_type=target_type,
                         sentiment=sentiment,
                         content=content
                     )
@@ -62,31 +61,17 @@ def crawlAndAnalyze(targetId="anthraciteCafe", targetType="cafe"):
     finally:
         db.close()
 
-
-# 본 프로젝트 스케줄러 : 매달 1일 실행d
-def startScheduler():
+def start_scheduler():
     scheduler = BackgroundScheduler()
 
     # 매달 1일 오전 3시
-    scheduler.add_job(crawlAndAnalyze, CronTrigger(day=1, hour=3, minute=0))
+    scheduler.add_job(crawl_and_analyze, CronTrigger(day=1, hour=3, minute=0))
 
     scheduler.start()
     print("🕒 APScheduler 시작됨")
 
     atexit.register(lambda: scheduler.shutdown())
 
-# 테스팅요 스케줄러 : 1분마다
-# def startScheduler():
-#     scheduler = BackgroundScheduler()
-
-#     # ✅ 테스트용: 1분마다 동작
-#     scheduler.add_job(crawlAndAnalyze, CronTrigger(minute="*/1"))
-
-#     scheduler.start()
-#     print("🕒 APScheduler 시작됨 (테스트용 1분마다 실행)")
-
-#     atexit.register(lambda: scheduler.shutdown())
-
-# (메인 서버 파일)
+# (메인 서버 파일에서 실행용)
 if __name__ == "__main__":
-    startScheduler()
+    start_scheduler()
