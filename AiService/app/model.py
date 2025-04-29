@@ -1,8 +1,9 @@
-# SQLAlchemy 모델 정의
-from sqlalchemy import Column, Integer, String, Text
-from .database import Base  # database.py에서 Base 가져오기
+# app/model.py
 
-class ReviewSummarize(Base):
+from sqlalchemy import Column, Integer, String, Text
+from .database import Base
+
+class Review_summarize(Base):
     __tablename__ = "review_summarize"
 
     review_id = Column(Integer, primary_key=True, index=True)

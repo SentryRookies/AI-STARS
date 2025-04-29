@@ -1,9 +1,10 @@
-# DB CRUD
+# app/crud.py
+
 from sqlalchemy.orm import Session
 from . import model
 
 # 저장 (create)
-def create_summary(db: Session, summary_data: model.ReviewSummarize):
+def create_summary(db: Session, summary_data: model.Review_summarize):
     try:
         print("🔵 DB 추가 시도")
         db.add(summary_data)
@@ -16,7 +17,6 @@ def create_summary(db: Session, summary_data: model.ReviewSummarize):
         db.rollback()
         raise
 
-
 # 조회 (read)
 def get_summary_by_target_id(db: Session, target_id: str):
-    return db.query(model.ReviewSummarize).filter(model.ReviewSummarize.target_id == target_id).all()
+    return db.query(model.Review_summarize).filter(model.Review_summarize.target_id == target_id).all()
