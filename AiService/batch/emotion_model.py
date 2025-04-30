@@ -7,8 +7,8 @@ from typing import List
 
 # 모델 경로
 base_dir = os.path.dirname(__file__)
-tokenizer_dir = os.path.abspath(os.path.join(base_dir, "/model/0424_tokenizer_epoch10_es2_lr2e-5_86/0424_tokenizer_epoch10_es2_lr2e-5_86"))
-model_dir = os.path.abspath(os.path.join(base_dir, "/model/0424_model_epoch10_es2_lr2e-5_86/0424_model_epoch10_es2_lr2e-5_86"))
+tokenizer_dir = os.path.abspath(os.path.join(base_dir, "../model/0424_tokenizer_epoch10_es2_lr2e-5_86/0424_tokenizer_epoch10_es2_lr2e-5_86"))
+model_dir = os.path.abspath(os.path.join(base_dir, "../model/0424_model_epoch10_es2_lr2e-5_86/0424_model_epoch10_es2_lr2e-5_86"))
 
 tokenizer = BertTokenizer.from_pretrained(tokenizer_dir, local_files_only=True)
 model = AutoModelForSequenceClassification.from_pretrained(model_dir, local_files_only=True)
