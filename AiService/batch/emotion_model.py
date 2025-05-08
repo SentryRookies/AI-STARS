@@ -17,6 +17,12 @@ clf = pipeline("text-classification", model=model, tokenizer=tokenizer)
 kiwi = Kiwi()
 split_keywords = r"(지만|는데|더라도|고도|하긴 하지만|하긴하지만|하긴했지만|하긴 했지만|불구하고|그럼에도|반면에|대신에)"
 
+label_map = {
+    "LABEL_0": "negative",   # 부정
+    "LABEL_1": "neutral",    # 중립
+    "LABEL_2": "positive"    # 긍정
+}
+
 def clean_text(text: str) -> str:
     text = re.sub(r'[^\w\s.,!?ㄱ-ㅎ가-힣]', '', text)
     text = re.sub(r'[ㅋㅎㅠㅜ]{2,}', '', text)
@@ -41,12 +47,13 @@ def split_clauses(base_sentence: str) -> List[str]:
 
 def classify_clause(clause: str) -> dict:
     if not clause.strip():
-        return None  # 빈 문장은 무시
+        return None
 
     pred = clf(clause)[0]
+    label = label_map.get(pred["label"], "neutral")  # 기본은 neutral로
     return {
         "text": clause,
-        "label": pred["label"],
+        "label": label,
         "score": round(pred["score"], 4)
     }
 

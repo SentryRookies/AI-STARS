@@ -65,7 +65,9 @@ def crawl_and_analyze():
 
     except Exception as e:
         db.rollback()
-        print("❌ 오류 발생:", e)
+        import traceback
+        print("❌ 오류 발생:", repr(e))
+        traceback.print_exc()
     finally:
         db.close()
 
@@ -80,6 +82,18 @@ def start_scheduler():
 
     atexit.register(lambda: scheduler.shutdown())
 
-# (메인 서버 파일에서 실행용)
+# 테스팅요 스케줄러 : 1분마다
+# def start_scheduler():
+#     scheduler = BackgroundScheduler()
+
+#     # ✅ 테스트용: 1분마다 동작
+#     scheduler.add_job(crawl_and_analyze, CronTrigger(minute="*/1"))
+
+#     scheduler.start()
+#     print("🕒 APScheduler 시작됨 (테스트용 1분마다 실행)")
+
+#     atexit.register(lambda: scheduler.shutdown())
+
+
 if __name__ == "__main__":
     start_scheduler()
