@@ -7,8 +7,8 @@ from typing import List
 
 # 모델 경로
 base_dir = os.path.dirname(__file__)
-tokenizer_dir = os.path.abspath(os.path.join(base_dir, "/model/0424_tokenizer_epoch10_es2_lr2e-5_86/0424_tokenizer_epoch10_es2_lr2e-5_86"))
-model_dir = os.path.abspath(os.path.join(base_dir, "/model/0424_model_epoch10_es2_lr2e-5_86/0424_model_epoch10_es2_lr2e-5_86"))
+tokenizer_dir = os.path.abspath(os.path.join(base_dir, "../model/0424_tokenizer_epoch10_es2_lr2e-5_86/0424_tokenizer_epoch10_es2_lr2e-5_86"))
+model_dir = os.path.abspath(os.path.join(base_dir, "../model/0424_model_epoch10_es2_lr2e-5_86/0424_model_epoch10_es2_lr2e-5_86"))
 
 # 감정 분류 파이프라인 정의
 tokenizer = BertTokenizer.from_pretrained(tokenizer_dir, local_files_only=True)
@@ -20,6 +20,12 @@ kiwi = Kiwi()
 
 # 전환 접속어 패턴
 split_keywords = r"(지만|는데|더라도|고도|하긴 하지만|하긴하지만|하긴했지만|하긴 했지만|불구하고|그럼에도|반면에|대신에)"
+
+label_map = {
+    "LABEL_0": "negative",   # 부정
+    "LABEL_1": "neutral",    # 중립
+    "LABEL_2": "positive"    # 긍정
+}
 
 def clean_text(text: str) -> str:
     """이모티콘/특수기호 제거"""
@@ -53,12 +59,13 @@ def split_clauses(base_sentence: str) -> List[str]:
 def classify_clause(clause: str) -> dict:
     """하나의 절에 대한 감정 분류"""
     if not clause.strip():
-        return None  # 빈 문장은 무시
+        return None
 
     pred = clf(clause)[0]
+    label = label_map.get(pred["label"], "neutral")  # 기본은 neutral로
     return {
         "text": clause,
-        "label": pred["label"],
+        "label": label,
         "score": round(pred["score"], 4)
     }
 

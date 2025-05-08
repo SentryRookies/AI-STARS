@@ -6,7 +6,6 @@ from pydantic import BaseModel
 class ReviewSummarizeCreate(BaseModel):
     target_id: str
     target_type: str
-    sentiment: str
     content: str
 
 # GET용 (응답용)
