@@ -8,6 +8,5 @@ model/0424_tokenizer_epoch10_es2_lr2e-5_86/0424_tokenizer_epoch10_es2_lr2e-5_86/
 model/0424_tokenizer_epoch10_es2_lr2e-5_86/0424_tokenizer_epoch10_es2_lr2e-5_86/tokenizer.json
 model/0424_tokenizer_epoch10_es2_lr2e-5_86/0424_tokenizer_epoch10_es2_lr2e-5_86/vocab.txt
 .env
-data/
 crawlling.py
 dd.py
