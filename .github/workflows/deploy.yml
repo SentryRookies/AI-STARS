@@ -42,7 +42,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Create .env from secret
-        run: echo "./AiService/${{ secrets.ENV }}" > .env
+        run: echo "${{ secrets.ENV }}" > ./AiService/.env
 
       - name: push the image to Amazon ECR
         id: build-image
