@@ -40,6 +40,8 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: true   # 또는 아예 제거해도 기본값 true
 
       - name: Create .env from secret
         run: echo "${{ secrets.ENV }}" > ./AiService/.env
