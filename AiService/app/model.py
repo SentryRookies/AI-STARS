@@ -1,8 +1,9 @@
-# app/model.py
+# SQLAlchemy ORM 모델 정의
 
 from sqlalchemy import Column, Integer, String, Text
 from .database import Base
 
+# 리뷰 키워드 테이블 정의
 class Review_summarize(Base):
     __tablename__ = "review_summarize"
 

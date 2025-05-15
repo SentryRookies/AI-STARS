@@ -21,30 +21,27 @@ kiwi = Kiwi()
 # 전환 접속어 패턴
 split_keywords = r"(지만|는데|더라도|고도|하긴 하지만|하긴하지만|하긴했지만|하긴 했지만|불구하고|그럼에도|반면에|대신에)"
 
+# 라벨 매핑
 label_map = {
-    "LABEL_0": "negative",   # 부정
-    "LABEL_1": "neutral",    # 중립
-    "LABEL_2": "positive"    # 긍정
+    "LABEL_0": "negative",   
+    "LABEL_1": "neutral",    
+    "LABEL_2": "positive"    
 }
 
+# 불필요 이모지&특수기호 제거
 def clean_text(text: str) -> str:
-    """이모티콘/특수기호 제거"""
-    # 이모지, 특수문자, 기호 삭제
     text = re.sub(r'[^\w\s.,!?ㄱ-ㅎ가-힣]', '', text)
-    # 반복 문자 제거
     text = re.sub(r'[ㅋㅎㅠㅜ]{2,}', '', text)
-    # 반복 특수문자 제거
     text = re.sub(r'[~!@#\$%\^&\*\(\)_\+=\[\]{}|\\:;"\'<>,.?/]{2,}', '', text)
-    # 앞뒤 공백 제거
     return text.strip()
 
+# 1차. 문장 단위로 자르기
 def split_sentences(text: str) -> List[str]:
-    """ 리뷰를 문장 단위로 나누기"""
     sentences = kiwi.split_into_sents(text)
     return [s.text.strip() for s in sentences]
 
+# 2차. 문장을 절 단위로 자르기
 def split_clauses(base_sentence: str) -> List[str]:
-    """ 한 문장을 여러 절로 나누기"""
     sub_clauses = re.split(split_keywords, base_sentence)
     clauses = []
     for j in range(0, len(sub_clauses), 2):
@@ -56,8 +53,8 @@ def split_clauses(base_sentence: str) -> List[str]:
             clauses.append(cleaned)
     return clauses
 
+# 3. 하나의 절에 대한 감정 분류
 def classify_clause(clause: str) -> dict:
-    """하나의 절에 대한 감정 분류"""
     if not clause.strip():
         return None
 
@@ -69,8 +66,9 @@ def classify_clause(clause: str) -> dict:
         "score": round(pred["score"], 4)
     }
 
+# 하나의 리뷰를 여러 개의 절별 감정 분석 결과로 변환
 def analyze_reviews(reviews: List[dict], save_path: str = None) -> List[dict]:
-    """하나의 리뷰를 여러 개의 절별 감정 분석 결과로 변환"""
+    # 결과저장 용 리스트
     results = []
 
     for item in reviews:
@@ -82,7 +80,7 @@ def analyze_reviews(reviews: List[dict], save_path: str = None) -> List[dict]:
                 if result:  # None 아닌 경우만 추가
                     results.append(result)
 
-    # ✅ 키 검증 추가
+    # 키 검증 추가
     validated_results = []
     for r in results:
         if all(k in r for k in ("text", "label", "score")):
@@ -93,6 +91,6 @@ def analyze_reviews(reviews: List[dict], save_path: str = None) -> List[dict]:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         df = pd.DataFrame(validated_results)
         df.to_csv(save_path, index=False, encoding='utf-8-sig')
-        print(f"✅ 감정 분석 결과 저장 완료: {save_path}")
+        print(f"감정 분석 결과 저장 완료: {save_path}")
 
     return validated_results

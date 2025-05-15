@@ -1,4 +1,4 @@
-# app/schema.py
+# 요청 및 응답의 데이터 구조 정의
 
 from pydantic import BaseModel
 
@@ -13,4 +13,4 @@ class ReviewSummarizeRead(ReviewSummarizeCreate):
     id: int
 
     class Config:
-        from_attributes = True  # ✅ pydantic v2용 옵션 (ORM 연동)
+        from_attributes = True 

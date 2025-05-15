@@ -1,4 +1,4 @@
-# app/database.py
+# DB 연결 세션 관리
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -13,5 +13,5 @@ DB_URL = (
 )
 
 engine = create_engine(DB_URL)
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)  # 대문자 L
+SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)  
 Base = declarative_base()
