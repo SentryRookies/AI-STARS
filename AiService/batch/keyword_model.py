@@ -219,9 +219,23 @@ negative_keyword_mapping = {
     ]
 }
 
-
-# 3. 키워드 매칭 함수
 def get_top_keyword_and_score(text: str, keyword_dict: Dict) -> pd.Series:
+    """
+        입력 텍스트와 가장 유사한 키워드 및 대표 문장과 유사도를 반환한다.
+
+        이 함수는 주어진 텍스트를 임베딩한 후, 제공된 키워드 딕셔너리 내 대표 문장들과의
+        코사인 유사도를 계산한다. 가장 높은 유사도를 보인 키워드와 해당 문장을 추출하여 반환함.
+
+        Args:
+            text (str): 비교 대상이 되는 입력 텍스트
+            keyword_dict (Dict[str, List[str]]): 키워드와 해당 키워드의 대표 문장 리스트를 가진 딕셔너리
+
+        Returns:
+            pd.Series:다음 항목을 포함하는 pd.Series 반환
+                - top_keyword (str): 가장 유사한 키워드
+                - best_sentence (str): 가장 유사한 대표 문장
+                - best_score (float): 최고 유사도 점수 (0~1)
+        """
     text_embedding = model.encode(text, convert_to_tensor=True)
     scores = {}
     best_sentence = ""
@@ -243,8 +257,24 @@ def get_top_keyword_and_score(text: str, keyword_dict: Dict) -> pd.Series:
     top_keyword = max(scores, key=scores.get)
     return pd.Series([top_keyword, best_sentence, best_score])
 
-# 4. 리뷰 리스트로부터 키워드 추출
 def extract_top_keywords(analyzed_data: List[Dict], save: bool = False, prefix: str = "result") -> Tuple[List[str], List[str]]:
+    """
+       감정 분석된 절 데이터에서 긍정/부정 상위 키워드 추출
+
+       이 함수는 분석된 텍스트 리스트를 긍정/부정 감정으로 분리한 뒤,
+       각 문장에 대해 `get_top_keyword_and_score` 함수를 통해 가장 유사한 키워드를 매칭함.
+       이후 등장 빈도를 기준으로 상위 키워드를 선정하며, 특정 키워드는 제외하거나 중복 처리를 통해 정제한다.
+
+       Args:
+           analyzed_data (List[Dict]): 감정 분석된 절 단위 데이터. 각 항목은 'text'와 'label' 키를 포함하여야 함.
+           save (bool, optional): 결과를 엑셀 파일로 저장할지 여부 (기본값 False)
+           prefix (str, optional): 저장 시 사용할 파일 이름 접두어 (기본값 "result")
+
+       Returns:
+           Tuple[List[str], List[str]]:
+               - 긍정 키워드 리스트 (최대 5개)
+               - 부정 키워드 리스트 (최대 5개)
+       """
     df = pd.DataFrame(analyzed_data)
 
     # 감정 필터링

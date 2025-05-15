@@ -1,3 +1,10 @@
+"""
+Alembic 환경 설정 파일 (env.py)
+
+이 파일은 오프라인/온라인 모드에 따라 마이그레이션을 실행한다.
+오프라인: SQL만 출력
+온라인: 실제 DB에 적용
+"""
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -11,6 +18,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
+
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
@@ -27,16 +35,8 @@ target_metadata = None
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
+    """
+    오프라인 모드로 마이그레이션 실행 (DB 연결 없이 SQL만 출력)
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
@@ -51,11 +51,8 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
+    """
+    온라인 모드로 마이그레이션 실행 (DB에 직접 연결하여 적용)
     """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
