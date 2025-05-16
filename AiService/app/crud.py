@@ -16,14 +16,14 @@ def create_summary(db: Session, summary_data: model.Review_summarize):
             ReviewSummarize: 저장된 데이터
     """
     try:
-        print("🔵 DB 추가 시도")
+        print(" DB 추가 시도")
         db.add(summary_data)
         db.commit()
         db.refresh(summary_data)
-        print("🟢 DB 커밋 완료")
+        print(" DB 커밋 완료")
         return summary_data
     except Exception as e:
-        print("❌ 예외 발생:", e)
+        print(" 예외 발생:", e)
         db.rollback()
         raise
 
