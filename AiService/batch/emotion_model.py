@@ -28,23 +28,50 @@ label_map = {
 }
 
 def clean_text(text: str) -> str:
-    """이모티콘/특수기호 제거"""
-    # 이모지, 특수문자, 기호 삭제
+    """
+    주어진 텍스트에서 불필요한 요소들을 제거하여 정제된 형태로 반환
+
+    정제 방식:
+    - 이모지, 특수문자, 기호를 제거. (한글, 숫자, 일반 구두점 등은 유지)
+    - 'ㅋ', 'ㅎ', 'ㅠ', 'ㅜ' 등의 반복되는 감정 표현 문자를 제거
+    - 반복되는 특수문자 시퀀스를 제거
+    - 최종적으로 앞뒤 공백을 제거
+
+    Args:
+        text (str): 정제할 원본 텍스트
+
+    Returns:
+        str: 정제된 텍스트
+    """
     text = re.sub(r'[^\w\s.,!?ㄱ-ㅎ가-힣]', '', text)
-    # 반복 문자 제거
     text = re.sub(r'[ㅋㅎㅠㅜ]{2,}', '', text)
-    # 반복 특수문자 제거
     text = re.sub(r'[~!@#\$%\^&\*\(\)_\+=\[\]{}|\\:;"\'<>,.?/]{2,}', '', text)
-    # 앞뒤 공백 제거
     return text.strip()
 
 def split_sentences(text: str) -> List[str]:
-    """ 리뷰를 문장 단위로 나누기"""
+    """
+    입력된 리뷰 텍스트를 문장 단위로 분리
+
+    Args:
+        text (str): 문장 분리를 수행할 전체 리뷰 텍스트
+
+    Returns:
+        List[str]: 분리된 문장 문자열들의 리스트 (앞 뒤 공백 제거됨)
+    """
     sentences = kiwi.split_into_sents(text)
     return [s.text.strip() for s in sentences]
 
 def split_clauses(base_sentence: str) -> List[str]:
-    """ 한 문장을 여러 절로 나누기"""
+    """
+    - 주어진 문장을 여러 절로 나누고, 각 절을 정제하여 리스트로 반환
+    - 절은 `split_keywords`로 정의된 키워드를 기준으로 나누며, 각 절은 `clean_text` 함수를 통해 정제됨
+
+    Args:
+        base_sentence (str): 절로 나눌 원본 문장
+
+    Returns:
+        List[str]: 정제된 절들의 리스트
+    """
     sub_clauses = re.split(split_keywords, base_sentence)
     clauses = []
     for j in range(0, len(sub_clauses), 2):
@@ -57,7 +84,23 @@ def split_clauses(base_sentence: str) -> List[str]:
     return clauses
 
 def classify_clause(clause: str) -> dict:
-    """하나의 절에 대한 감정 분류"""
+    """
+    주어진 절에 대한 감정 분석을 수행하고 결과 반환
+
+    이 함수는 주어진 절을 감정 분류 모델에 입력하여 해당 절의 감정 레이블과 신뢰도를 반환
+    모델 예측 결과를 기반으로, 레이블이 `label_map`에서 정의된 감정으로 매핑됨
+    예측된 감정의 신뢰도는 소수점 4자리로 반올림하여 반환
+
+    Args:
+        clause (str): 감정 분류할 절
+
+    Returns:
+        dict: 감정 분석 결과를 담은 딕셔너리로, 포함된 키는 'text', 'label', 'score'이다.
+            - 'text': 입력된 절,
+            - 'label': 감정 레이블(긍정: 2, 중립: 1, 부정: 0),
+            - 'score': 해당 감정의 신뢰도(0.0 ~ 1.0)
+        입력된 절이 비어 있거나 공백만 있을 경우 `None` 반환
+    """
     if not clause.strip():
         return None
 
@@ -70,7 +113,26 @@ def classify_clause(clause: str) -> dict:
     }
 
 def analyze_reviews(reviews: List[dict], save_path: str = None) -> List[dict]:
-    """하나의 리뷰를 여러 개의 절별 감정 분석 결과로 변환"""
+    """
+    여러 리뷰를 절 단위로 분해하고, 각 절에 대해 감정 분석을 수행
+
+    이 함수는 입력된 리뷰 리스트에서 텍스트 내용을 추출한 뒤,
+    문장 분리(`split_sentences`) → 절 분리(`split_clauses`) → 감정 분류(`classify_clause`)를 거쳐,
+    각 절에 대해 감정 결과(`text`, `label`, `score`)를 생성함.
+    결과는 유효성 검증 후, 옵션에 따라 CSV 파일로 저장
+
+    Args:
+        reviews (List[dict]): 감정 분석 대상 리뷰 리스트.
+                              각 리뷰는 'content' 키를 포함한 딕셔너리여야 함.
+        save_path (str, optional): 분석 결과를 저장할 CSV 파일 경로.
+
+    Returns:
+        List[dict]: 분석된 감정 결과 리스트.
+                    각 항목은 다음의 키를 포함
+                        - 'text': 절 텍스트
+                        - 'label': 감정 레이블(긍정: 2, 중립: 1, 부정: 0)
+                        - 'score': 감정 예측의 신뢰도 (0.0 ~ 1.0)
+    """
     results = []
 
     for item in reviews:

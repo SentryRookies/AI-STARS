@@ -12,16 +12,45 @@ from batch.emotion_model import analyze_reviews
 from batch.keyword_model import extract_top_keywords
 
 def load_last_processed(path="last_processed.json"):
+    """
+        마지막으로 처리된 파일명 불러오기
+
+        Args:
+            path (str): 저장된 JSON 파일 경로
+
+        Returns:
+            str: 마지막 처리된 파일 이름 (없으면 None)
+        """
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f).get("last_processed")
     return None
 
 def save_last_processed(filename, path="last_processed.json"):
+    """
+        처리 완료된 마지막 파일명을 기록
+
+        Args:
+            filename (str): 마지막으로 처리한 파일 이름
+            path (str): 기록을 저장할 JSON 경로
+        """
     with open(path, "w", encoding="utf-8") as f:
         json.dump({"last_processed": filename}, f)
 
 def crawl_and_analyze():
+    """
+        데이터 디렉토리의 CSV 파일을 주기적으로 분석하여 DB에 저장한다.
+
+        수행 작업:
+            - 분석되지 않은 CSV 파일을 탐색
+            - 파일명에서 target_type, target_id 추출
+            - 리뷰 텍스트 분석 (문장/절 분리 및 감정 분류) 'analyze_reviews'
+            - 키워드 추출 (긍정/부정) 'extract_top_keywords'
+            - 분석 요약을 DB에 저장 또는 업데이트
+            - 마지막 처리 파일명 저장
+
+        예외 발생 시 롤백 및 에러 출력
+        """
     print("📦 [스케줄러] CSV 읽기 + 분석 시작")
     db = SessionLocal()
     data_dir = "./data"
@@ -104,6 +133,10 @@ def crawl_and_analyze():
         db.close()
 
 def start_scheduler():
+    """
+        APScheduler를 시작하여 `crawl_and_analyze`를 매일 오전 10시에 실행한다.
+        애플리케이션 종료 시 스케줄러 종료 처리도 포함된다.
+    """
     scheduler = BackgroundScheduler()
     scheduler.add_job(crawl_and_analyze, CronTrigger(hour=10, minute=0))
     scheduler.start()
