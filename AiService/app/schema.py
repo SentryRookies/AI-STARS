@@ -31,4 +31,4 @@ class ReviewSummarizeRead(ReviewSummarizeCreate):
     id: int
 
     class Config:
-        from_attributes = True  # ✅ pydantic v2용 옵션 (ORM 연동)
+        from_attributes = True  #  pydantic v2용 옵션 (ORM 연동)

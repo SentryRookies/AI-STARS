@@ -101,16 +101,28 @@ def classify_clause(clause: str) -> dict:
             - 'score': 해당 감정의 신뢰도(0.0 ~ 1.0)
         입력된 절이 비어 있거나 공백만 있을 경우 `None` 반환
     """
+    """하나의 절에 대한 감정 분류 (길이 제한 포함)"""
     if not clause.strip():
         return None
 
-    pred = clf(clause)[0]
-    label = label_map.get(pred["label"], "neutral")  # 기본은 neutral로
-    return {
-        "text": clause,
-        "label": label,
-        "score": round(pred["score"], 4)
-    }
+    # 토큰 길이 확인 및 자르기
+    max_len = tokenizer.model_max_length 
+    tokens = tokenizer.tokenize(clause)
+    if len(tokens) > max_len:
+        tokens = tokens[:max_len]
+        clause = tokenizer.convert_tokens_to_string(tokens)
+
+    try:
+        pred = clf(clause)[0]
+        label = label_map.get(pred["label"], "neutral") 
+        return {
+            "text": clause,
+            "label": label,
+            "score": round(pred["score"], 4)
+        }
+    except Exception as e:
+        print(f"감정 분류 오류: {e}\n>> 문제 문장: {clause[:100]}...")
+        return None
 
 def analyze_reviews(reviews: List[dict], save_path: str = None) -> List[dict]:
     """
@@ -144,7 +156,7 @@ def analyze_reviews(reviews: List[dict], save_path: str = None) -> List[dict]:
                 if result:  # None 아닌 경우만 추가
                     results.append(result)
 
-    # ✅ 키 검증 추가
+    #  키 검증 추가
     validated_results = []
     for r in results:
         if all(k in r for k in ("text", "label", "score")):
@@ -155,6 +167,6 @@ def analyze_reviews(reviews: List[dict], save_path: str = None) -> List[dict]:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         df = pd.DataFrame(validated_results)
         df.to_csv(save_path, index=False, encoding='utf-8-sig')
-        print(f"✅ 감정 분석 결과 저장 완료: {save_path}")
+        print(f" 감정 분석 결과 저장 완료: {save_path}")
 
     return validated_results

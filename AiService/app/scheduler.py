@@ -37,6 +37,9 @@ def save_last_processed(filename, path="last_processed.json"):
     with open(path, "w", encoding="utf-8") as f:
         json.dump({"last_processed": filename}, f)
 
+# 전역 DB 세션 객체
+db = None
+
 def crawl_and_analyze():
     """
         데이터 디렉토리의 CSV 파일을 주기적으로 분석하여 DB에 저장한다.
@@ -51,8 +54,8 @@ def crawl_and_analyze():
 
         예외 발생 시 롤백 및 에러 출력
         """
-    print("📦 [스케줄러] CSV 읽기 + 분석 시작")
-    db = SessionLocal()
+    print(" [스케줄러] CSV 읽기 + 분석 시작")
+    global db
     data_dir = "./data"
 
     last_processed = load_last_processed()
@@ -68,12 +71,12 @@ def crawl_and_analyze():
                 continue
 
             file_path = os.path.join(data_dir, file_name)
-            print(f"📂 파일 분석 시작: {file_path}")
+            print(f" 파일 분석 시작: {file_path}")
 
-            # ✅ target_type, target_id 추출
+            #  target_type, target_id 추출
             name_parts = file_name.replace(".csv", "").split("_")
             if len(name_parts) < 3:
-                print(f"⚠️ 파일 이름 형식 오류: {file_name}")
+                print(f" 파일 이름 형식 오류: {file_name}")
                 continue
 
             target_type = name_parts[0]
@@ -86,7 +89,7 @@ def crawl_and_analyze():
             validated_data = analyze_reviews(reviews)
             validated_data = [r for r in validated_data if r and all(k in r for k in ("text", "label", "score"))]
 
-            print(f"✅ 검증된 데이터 수: {len(validated_data)}")
+            print(f" 검증된 데이터 수: {len(validated_data)}")
             analyzed_df = pd.DataFrame(validated_data)
 
             pos_keywords, neg_keywords = extract_top_keywords(validated_data)
@@ -109,7 +112,7 @@ def crawl_and_analyze():
 
             if existing:
                 existing.content = content_summary
-                print(f"🔄 기존 항목 업데이트: {target_type}, {target_id}")
+                print(f" 기존 항목 업데이트: {target_type}, {target_id}")
             else:
                 summary = Review_summarize(
                     target_id=target_id,
@@ -117,32 +120,40 @@ def crawl_and_analyze():
                     content=content_summary
                 )
                 db.add(summary)
-                print(f"🆕 새 항목 추가: {target_type}, {target_id}")
+                print(f" 새 항목 추가: {target_type}, {target_id}")
             db.commit()
-            print(f"✅ {file_name} 분석 및 저장 완료")
+            print(f" {file_name} 분석 및 저장 완료")
 
-            # ✅ 파일 처리 후 기록
+            #  파일 처리 후 기록
             save_last_processed(file_name)
 
     except Exception as e:
         db.rollback()
         import traceback
-        print("❌ 오류 발생:", repr(e))
+        print(" 오류 발생:", repr(e))
         traceback.print_exc()
     finally:
         db.close()
 
 def start_scheduler():
     """
-        APScheduler를 시작하여 `crawl_and_analyze`를 매일 오전 10시에 실행한다.
+        APScheduler를 시작하여 `crawl_and_analyze`를 매달 1일 오전 1시에 실행한다.
         애플리케이션 종료 시 스케줄러 종료 처리도 포함된다.
     """
+    global db
+    db = SessionLocal()  # 시작 시 DB 연결
     scheduler = BackgroundScheduler()
-    scheduler.add_job(crawl_and_analyze, CronTrigger(hour=10, minute=0))
+    scheduler.add_job(crawl_and_analyze, CronTrigger(day=1, hour=1, minute=00))
     scheduler.start()
-    print("🕒 APScheduler 시작됨")
-    atexit.register(lambda: scheduler.shutdown())
+    print(" APScheduler 시작됨")
 
+    # 종료 시 DB도 닫기
+    def shutdown():
+        print(" 스케줄러 종료: DB 세션 닫기")
+        scheduler.shutdown()
+        db.close()
+
+    atexit.register(shutdown)
 
 if __name__ == "__main__":
     start_scheduler()
