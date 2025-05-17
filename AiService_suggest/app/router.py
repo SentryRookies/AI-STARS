@@ -30,7 +30,7 @@ congestion_context = "\n".join(congestion_texts)
 @router.post("/suggest/{user_id}")
 def recommend_trip(user_id: str, input_data: TripInput, db: Session = Depends(get_chat_db)):
     """
-        사용자의 여행 정보를 바탕으로 여행 코스를 생성하고 DB에 저장합니다.
+        사용자의 여행 정보를 바탕으로 여행 코스를 생성하고 DB에 저장한다.
 
         Args:
             user_id (str): 사용자 식별자 (경로 매개변수).
@@ -99,6 +99,23 @@ def recommend_trip(user_id: str, input_data: TripInput, db: Session = Depends(ge
 def get_user_history(user_id: str,
                      db1: Session = Depends(get_chat_db),
                      db2: Session = Depends(get_user_db)):
+    """
+    특정 사용자의 여행 추천 요청 기록 및 개인 정보를 조회한다.
+
+    Args:
+        user_id (str): 사용자 식별자 (경로 매개변수)
+        db1 (Session): chat_history 테이블 접근을 위한 DB 세션
+        db2 (Session): member 테이블 접근을 위한 DB 세션
+
+    Returns:
+        list[dict]: 사용자의 과거 여행 추천 기록 리스트
+        - 각 항목에는 여행 시간, 요청사항, MBTI, 추천 결과 등이 포함됨
+
+    Raises:
+        HTTPException:
+            - 404: 사용자 정보가 존재하지 않을 경우
+            - 500: DB 조회 중 오류 발생 시
+    """
     # DB 조회 로직
     try:
         # 채팅 기록 조회
