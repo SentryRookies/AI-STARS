@@ -20,6 +20,10 @@ UserSessionLocal = sessionmaker(bind=user_engine, autocommit=False, autoflush=Fa
 
 # DB 세션 주입 함수
 def get_user_db():
+    """
+    DB 세션 주입 함수
+    - member 테이블
+    """
     db = UserSessionLocal()
     try:
         yield db

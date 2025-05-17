@@ -20,6 +20,10 @@ ChatSessionLocal = sessionmaker(bind=chat_engine, autocommit=False, autoflush=Fa
 
 # DB 세션 주입 함수
 def get_chat_db():
+    """
+    DB 세션 주입 함수
+    - chat_history 테이블
+    """
     db = ChatSessionLocal()
     try:
         yield db
