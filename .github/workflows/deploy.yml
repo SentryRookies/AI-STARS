@@ -46,7 +46,7 @@ jobs:
       - name: Create .env from secret
         run: |
           echo "${{ secrets.ENV }}" > ./AiService/.env
-          echo "${{ secrets.ENV_SUGGEST }}" > ./AiService-suggest/.env
+          echo "${{ secrets.ENV_SUGGEST }}" > ./AiService_suggest/.env
 
       - name: push the image to Amazon ECR
         id: build-image
