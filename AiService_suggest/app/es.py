@@ -2,9 +2,11 @@ import requests
 import json
 from datetime import datetime
 import os
+from dotenv import load_dotenv
 
 # Elasticsearch 주소
-ELASTICSEARCH_URL = "http://elasticsearch.seoultravel.life"
+load_dotenv()
+ELASTICSEARCH_URL = os.getenv("ELASTICSEARCH_URL")
 
 def fetch_data_from_elasticsearch():
     """
