@@ -44,17 +44,22 @@ jobs:
           mask-password: true   # 또는 아예 제거해도 기본값 true
 
       - name: Create .env from secret
-        run: echo "${{ secrets.ENV }}" > ./AiService/.env
+        run: |
+          echo "${{ secrets.ENV }}" > ./AiService/.env
+          echo "${{ secrets.ENV_SUGGEST }}" > ./AiService-suggest/.env
 
       - name: push the image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: aiservice
-          
+
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./AiService/
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/aiservice:$IMAGE_TAG ./AiService/
+          docker push $ECR_REGISTRY/aiservice:$IMAGE_TAG
+
+          docker build -t $ECR_REGISTRY/ai-suggest:$IMAGE_TAG ./AiService_suggest/
+          docker push $ECR_REGISTRY/ai-suggest:$IMAGE_TAG
 
       - name: Set up kubeconfig
         run: aws eks update-kubeconfig --region ap-northeast-2 --name one-cluster
@@ -64,5 +69,5 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: aiservice
         run: |
-          kubectl set image deployment/aiservice aiservice=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          kubectl rollout status deployment/aiservice
+          kubectl restart status deployment/aiservice
+          kubectl restart status deployment/ai-suggest
