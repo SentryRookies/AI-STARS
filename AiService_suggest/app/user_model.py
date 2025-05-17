@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class Member(Base):
+    """사용자 정보 모델"""
     __tablename__ = "member"
 
     user_id = Column(String(100), primary_key=True, autoincrement=True)

@@ -29,6 +29,28 @@ congestion_context = "\n".join(congestion_texts)
 # POST 요청 처리 엔드포인트
 @router.post("/suggest/{user_id}")
 def recommend_trip(user_id: str, input_data: TripInput, db: Session = Depends(get_chat_db)):
+    """
+        사용자의 여행 정보를 바탕으로 여행 코스를 생성하고 DB에 저장합니다.
+
+        Args:
+            user_id (str): 사용자 식별자 (경로 매개변수).
+            input_data (TripInput): 사용자로부터 입력받은 여행 관련 정보.
+            db (Session): 의존성 주입된 SQLAlchemy 세션 (채팅 기록용 DB).
+
+        Returns:
+            dict: 생성된 여행 일정 정보와 메타데이터를 포함하는 JSON 응답.
+
+        Raises:
+            HTTPException:
+                - 400: 시작 시간이 종료 시간보다 이후일 경우
+                - 500: 여행 경로 생성 또는 DB 저장 중 오류 발생 시
+
+        Workflow:
+            - 날짜 유효성 검증
+            - LLM을 통한 여행 코스 생성
+            - 생성된 결과를 chat_history 테이블에 저장
+            - 사용자에게 응답 반환
+        """
     # 날짜 논리 오류 확인
     if input_data.start_time >= input_data.finish_time:
         raise HTTPException(status_code=400, detail="Start time must be before finish time")

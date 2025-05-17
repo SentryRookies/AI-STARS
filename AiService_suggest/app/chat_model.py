@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class ChatHistory(Base):
+    """채팅 기록 모델"""
     __tablename__ = "chat_history"
 
     chat_id = Column(Integer, primary_key=True, autoincrement=True)

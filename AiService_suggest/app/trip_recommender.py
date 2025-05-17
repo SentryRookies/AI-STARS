@@ -11,6 +11,19 @@ llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 
 # 여행 추천 함수
 def generate_trip_plan(trip_input, congestion_texts: str) -> str:
+    """
+        사용자의 여행 정보와 혼잡 지역 데이터를 바탕으로 여행 일정을 생성한다.
+
+        이 함수는 사용자 정보와 요청사항(TripInput), 일정 유형(당장여행/당일코스/숙박여행)에 따라
+        맞춤형 서울 여행 일정을 생성하고 LLM에 전달할 프롬프트를 구성한다.
+
+        Args:
+            trip_input (TripInput): 사용자 여행 정보가 담긴 객체
+            congestion_texts (str): 혼잡한 지역 정보 텍스트 (피해야 할 장소들)
+
+        Returns:
+            str: LLM 응답으로 예상되는 서울 여행 일정 추천 텍스트
+        """
     only_type_0 = ""
     trip = ""
     answer_ex = ""
