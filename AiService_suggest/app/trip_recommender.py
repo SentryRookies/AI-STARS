@@ -1,9 +1,6 @@
-# from langchain_groq import ChatGroq
 import os
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-
-# os.environ["GROQ_API_KEY"] = "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"
 
 # OpenAI API 키 설정
 load_dotenv()
@@ -11,7 +8,6 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # LLM 초기화
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
-# llm = ChatGroq(model_name="llama-3.3-70b-versatile", temperature=0.7)
 
 # 여행 추천 함수
 def generate_trip_plan(trip_input, congestion_texts: str) -> str:
