@@ -24,12 +24,12 @@ def generate_trip_plan(trip_input, congestion_texts: str) -> str:
         Returns:
             str: LLM 응답으로 예상되는 서울 여행 일정 추천 텍스트
         """
-    only_type_0 = ""
     trip = ""
     answer_ex = ""
+    only_type_0 = ""
     only_type_1 = ""
     only_type_2 = ""
-    congestion_ignore = f"[혼잡한 지역 정보 (반드시 피할 것)]\n{congestion_texts}"
+    congestion_ignore = ""
     # 당장여행
     if trip_input.question_type == 0:
         trip = f"여행 시작 위치: {trip_input.start_place}"
@@ -55,6 +55,7 @@ def generate_trip_plan(trip_input, congestion_texts: str) -> str:
        - 🚕 택시 이동 (00분, 약 000원)
 
     🕕 00:00 - 여행 종료"""
+        congestion_ignore = f"[혼잡한 지역 정보 (반드시 피할 것)]\n{congestion_texts}"
     # 당일코스
     elif trip_input.question_type == 1:
         trip = f"여행 시작 위치: {trip_input.start_place}"
