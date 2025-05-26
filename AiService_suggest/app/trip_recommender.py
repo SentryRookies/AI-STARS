@@ -64,8 +64,15 @@ def generate_trip_plan(trip_input, congestion_texts: str) -> str:
         only_type = "반드시 하루 일정으로 구성해주세요. 입력된 시작 시간과 종료 시간 사이에 가능한 일정만 포함해야 하며, 일정이 이틀 이상으로 넘어가지 않도록 하세요."
     # 숙박여행
     elif trip_input.question_type == 2:
+        # 숙소 위치
         trip = f"숙소 위치: {trip_input.start_place}"
-        only_type = "여행 시작시 숙소 체크인(짐 맡기기)후 일정 시작, 여행 경로 설정시 숙소 위치 필수 고려, 마지막날 일정 시작 전 체크아웃 진행, 자유시간은 숙소인근의 번화가에서 당일 일정 마지막에 부여, 마지막 날 체크아웃 이후 짐을 고려해서 활동적인 관광지 및 힘든 이동 경로 제한"
+        # 여행 일수 계산
+        trip_days = (trip_input.finish_time - trip_input.start_time).days + 1
+
+        only_type = f"""
+        - 여행은 총 {trip_days}일 일정입니다. Day 1부터 Day {trip_days}까지 하루 단위로 구성하세요.
+        - 여행 시작시 숙소 체크인(짐 맡기기)후 일정 시작, 여행 경로 설정시 숙소 위치 필수 고려, 마지막날 일정 시작 전 체크아웃 진행, 자유시간은 숙소인근의 번화가에서 당일 일정 마지막에 부여, 마지막 날 체크아웃 이후 짐을 고려해서 활동적인 관광지 및 힘든 이동 경로 제한"
+        """
         answer_ex = """
         🏨 숙소: 남산 아래 위치로 교통 편리, 명동과 을지로 접근성 우수
 
@@ -126,6 +133,8 @@ def generate_trip_plan(trip_input, congestion_texts: str) -> str:
         🕑 00:00 - 관광지 (관광지 간단 설명)
             - 🚌 이동 (10분, 약 1,250원)
             - 🚕 택시 이동 (00분, 약 000원)
+            
+        (이후 Day 4~Day N도 같은 형식으로 이어서 작성)
         """
     else:
         raise ValueError("Invalid question_type")
@@ -147,7 +156,7 @@ def generate_trip_plan(trip_input, congestion_texts: str) -> str:
     - 각 일정마다 장소, 활동, 이동수단, 소요시간, 예상 비용 포함
     - 요청사항 반드시 반영
     - 각 장소별 추천 이유 간단히 명시
-    - {only_type}
+    {only_type}
 
     {congestion_ignore}
 
