@@ -149,3 +149,32 @@ def get_user_history(user_id: str,
         }
         for h in history
     ]
+
+# 유저 삭제 시 채팅기록 삭제
+@router.get("/suggest/{user_id}/delete")
+def delete_chat_history(user_id: str, db: Session = Depends(get_chat_db)):
+    """
+    user_id에 해당하는 채팅 기록을 삭제한다.
+
+    Args:
+        user_id (str): 삭제 대상 유저 ID
+        db (Session): DB 세션 (의존성 주입)
+
+    Returns:
+        dict: 삭제 결과 메시지 반환
+
+    Raises:
+        HTTPException 500: 삭제 중 오류 발생 시 반환
+    """
+    try:
+        deleted_rows = db.query(ChatHistory).filter(ChatHistory.user_id == user_id).delete()
+        db.commit()
+
+        if deleted_rows == 0:
+            return {"message": f"No chat history found for user '{user_id}'. Nothing was deleted."}
+
+        return {"message": f"{deleted_rows} chat history entries for user '{user_id}' deleted."}
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete chat history: {str(e)}")
