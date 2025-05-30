@@ -56,4 +56,4 @@ def read_summary_by_target(target_type: str, target_id: str, db: Session = Depen
     result = crud.get_summary_by_target(db, target_id, target_type)
     if result:
         return {"target_id": target_id, "target_type": target_type, "content": result.content}
-    return JSONResponse(status_code=404, content={"detail": "Summary not found"})
+    return JSONResponse(status_code=200, content={"detail": "Summary not found"})
