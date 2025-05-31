@@ -67,7 +67,7 @@ def generate_trip_plan(trip_input, congestion_texts: str) -> str:
         # 숙소 위치
         trip = f"숙소 위치: {trip_input.start_place}"
         # 여행 일수 계산
-        trip_days = (trip_input.finish_time - trip_input.start_time).days + 1
+        trip_days = (trip_input.finish_time.date() - trip_input.start_time.date()).days + 1
 
         only_type = f"""
         - 여행은 총 {trip_days}일 일정입니다. Day 1부터 Day {trip_days}까지 하루 단위로 구성하세요.
