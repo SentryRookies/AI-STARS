@@ -84,7 +84,7 @@
 ## 🖼️ 시연 이미지
 
 > **리뷰 요약 결과**  
-![summary-demo](images/summary_result.png)
+![[summary-demo](images/summary_result.png)](https://private-user-images.githubusercontent.com/127455884/455257928-1cdad800-3d31-4687-a152-b065faf4a72c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDk5OTI1NDEsIm5iZiI6MTc0OTk5MjI0MSwicGF0aCI6Ii8xMjc0NTU4ODQvNDU1MjU3OTI4LTFjZGFkODAwLTNkMzEtNDY4Ny1hMTUyLWIwNjVmYWY0YTcyYy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwNjE1JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDYxNVQxMjU3MjFaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xNGU1NTQwNzY5YjJlNGY0YTc2ZmJiMmE3NzNiMzA0ZTk2NjI2ZWRhNDc2OTFhMzdjNjM5OTE3Y2M0NGVlZGVjJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.0CRpL4sDM0gf2VnpjgTphSTWThFAtTj8UrGNv6EngcY)
 
 > **개인 맞춤 추천 결과**  
 ![recommend-demo](images/recommend_result.png)
