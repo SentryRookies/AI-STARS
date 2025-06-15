@@ -78,8 +78,6 @@
 
 ---
 
-## 💁‍♂️ 프로젝트 팀원
-|Backend|Frontend|
-|:---:|:---:|
-| ![](https://github.com/yewon-Noh.png?size=120) | ![](https://github.com/SeongHo-C.png?size=120) |
+## 💁‍♂️ AI 팀원
+|AI 팀장|AI 팀원|
 |[김지수]|[안재훈]|
