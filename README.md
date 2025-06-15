@@ -9,6 +9,8 @@
 - **AiService**: 장소별 사용자 리뷰 데이터를 분석하여 감정 분류 및 장단점 키워드 추출
 - **AiService_suggest**: 사용자 정보(MBTI, 나이, 성별, 일정 등) + 혼잡도 정보를 기반으로 LLM 기반 관광지 추천
 - **.github**: EKS 기반 자동 배포 환경 구성
+- 
+> 🔁 **FastAPI 기반 AI 서버를 구축, Spring Boot와 REST API 방식으로 통신**
 
 ---
 
