@@ -29,7 +29,7 @@
 - **요약 절차**:
   리뷰 수집 → 문장 분리 → 감정 분류 → 키워드 추출 → 요약 생성
 
-- **API URL**: `POST /place/summary/[targetType]/{placecode}`
+- **API URL**: `GET /place/summary/[targetType]/{placecode}`
 
 - **반환 예시**:
   ```json
@@ -50,7 +50,7 @@
   - LangChain + OpenAI를 통한 프롬프트 구성 및 응답 생성
   - Elasticsearch를 활용해 실시간 혼잡도 정보 반영 (RAG 구조 적용)
 
-- **API URL**: `POST /user/suggest/{user_id}`
+- **API URL**: `GET /user/suggest/{user_id}`
 
 - **반환 예시**:
   ```json
