@@ -86,6 +86,7 @@
 ## 🖼️ 시연 이미지
 
 > **리뷰 요약 결과**
+
 ![summary-demo](AiService/images/summaryResult.png)
 
 > **개인 맞춤 추천 결과**  
