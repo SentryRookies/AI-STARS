@@ -13,6 +13,20 @@ KoBERT 기반 감정 분석과 SBERT 기반 유사도 분석을 통해 긍/부�
 
 ---
 
+## ▶️ 실행 방법
+
+1. 의존성 설치
+```bash
+pip install -r requirements.txt
+```
+
+2. 서버 실행
+```bash
+uvicorn app.main:app --reload
+```
+
+---
+
 ## 🔁 처리 과정
 
 1. 리뷰 수집 (카페, 숙소, 관광지, 음식점 등) 
