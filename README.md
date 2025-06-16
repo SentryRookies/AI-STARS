@@ -85,7 +85,8 @@
 
 ## 🖼️ 시연 이미지
 
-> **리뷰 요약 결과**  
+> **리뷰 요약 결과**
+<img src="https://github.com/SentryRookies/AI-STARS/AiService/images/summaryResult.png" width="80">
 ![[summary-demo](AiService/images/summaryResult.png)]
 
 > **개인 맞춤 추천 결과**  
