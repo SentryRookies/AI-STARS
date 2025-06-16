@@ -37,3 +37,26 @@ uvicorn app.main:app --reload
 
 ---
 
+## 📁 프로젝트 디렉토리 구조 (AiService_suggest)
+
+```bash
+AiService_suggest/
+├── app/                         # 추천 기능을 위한 FastAPI 서버 구성
+│   ├── chat_database.py        # 채팅 관련 DB 연결 설정
+│   ├── chat_model.py           # 채팅 기록 데이터 모델
+│   ├── createDB.py             # DB 초기 스키마 생성 스크립트
+│   ├── es.py                   # Elasticsearch 연동 및 쿼리 처리 모듈
+│   ├── router.py               # FastAPI 라우팅 설정
+│   ├── schema.py               # 요청 및 응답을 위한 Pydantic 스키마 정의
+│   ├── trip_recommender.py     # 여행지 추천 로직 구현
+│   ├── user_database.py        # 사용자 관련 DB 설정
+│   └── user_model.py           # 사용자 정보 데이터 모델
+│
+├── main.py                    # FastAPI 앱 실행 진입점
+├── Dockerfile                 # Docker 빌드 설정
+├── .dockerignore              # Docker 제외 파일 설정
+├── .gitignore                 # Git 제외 파일 설정
+├── requirements.txt           # 의존 패키지 리스트
+```
+
+---
