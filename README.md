@@ -86,10 +86,10 @@
 ## 🖼️ 시연 이미지
 
 > **리뷰 요약 결과**
-![[summary-demo](https://github.com/SentryRookies/AI-STARS/blob/main/AiService/images/summaryResult.png)]
+![summary-demo](AiService/images/summaryResult.png)
 
 > **개인 맞춤 추천 결과**  
-![[suggest-demo](AiService_suggest/images/suggestResult.png)]
+![suggest-demo](AiService_suggest/images/suggestResult.png)
 
 ---
 
