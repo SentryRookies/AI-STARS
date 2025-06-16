@@ -72,3 +72,11 @@ AiService/
 └── requirements.txt           # 의존 라이브러리 목록
 ```
 ---
+
+## 📦 모델 선정
+
+1. [감정 분석 모델(KoBert)](https://huggingface.co/alsgyu/sentiment-analysis-fine-tuned-model)
+
+
+
+---
